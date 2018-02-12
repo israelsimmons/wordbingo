@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html ng-app="bingo-shuffle">
+<head>
+	<title>Bingo Shuffle</title>
+	<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<style type="text/css">
+	[ng-cloak],.ng-cloak {display: none !important;}
+</style>
+<body class="container col-sm-12" ng-controller="pruebaCtrl">
+<h2>Words Bingo</h2>
+<div class="checkbox">
+	<label>
+		<input type="checkbox" ng-value="false" ng-model="fastmode"> Fast mode
+	</label>
+</div>
+
+<div class="checkbox">
+	<label>
+		<input type="checkbox" ng-value="false" ng-model="practicemode"> Practice mode
+	</label>
+</div>
+<div class="row">
+  <div class="col-xs-6">
+    <button ng-disabled="res.length==totalWords" ng-click="nextWord()" class="col-sm-6 btn btn-block btn-primary"><i class="glyphicon glyphicon-bullhorn"></i> Next word</button>
+  </div>
+  <div class="col-xs-6">
+  	<button ng-click="newGame()" class="col-sm-6 btn btn-block btn-success"><i class="glyphicon glyphicon-refresh"></i> New game</button>
+  </div>
+</div>
+
+<h5 ng-cloak ng-show="res.length > 0">Word {{res.length}} out of {{totalWords}}</h5>
+<h3 ng-cloak ng-show="!shuffleling && !fastmode">{{res[0][1] | capitalize}}</h3>
+<h2 class="text-center" ng-cloak ng-show="!shuffleling && fastmode">{{res[0][0] | capitalize}}</h2>
+<h3 ng-show="shuffleling && !first">Shuffling words...</h3>
+<h3 ng-show="!shuffleling && res.length==0">Should we begin?</h3>
+<div ng-show="!practicemode ">
+	<table ng-cloak ng-show="!shuffleling" class="table table-condensed table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>Word</th>
+				<th>Meaning</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="r in res">
+				<td>{{r[0] | capitalize}}</td>
+				<td>{{r[1] | capitalize}}</td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+
+</body>
+
+<script type="text/javascript" src='bower_components/angular/angular.min.js'></script>
+<script type="text/javascript" src='bower_components/angular-resource/angular-resource.min.js'></script>
+
+<script type="text/javascript">
+	'use strict';
+
+	var app = angular.module('bingo-shuffle', ['ngResource']);
+
+	app.factory('Prueba', function($resource){
+		return $resource('/words', {});
+	})
+
+	app.filter('capitalize', function() {
+	    return function(input) {
+	      return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+	    }
+	});
+
+	app.controller('pruebaCtrl', ['$scope','Prueba',function($scope, Prueba){
+		
+		var data = [];
+		var idx = -1;
+		var res = [];
+		$scope.shuffleling = true;
+		$scope.first = true;
+		$scope.first = false;
+		$scope.totalWords = 0;
+		
+		Prueba.get().$promise
+		.then(function(a){
+
+			data = a.data;
+			$scope.totalWords = data.length;
+			$scope.shuffleling = false;
+
+		});
+
+		$scope.nextWord = function(){
+
+			idx++;
+			$scope.displayPalabras();
+			$scope.first = false;	
+			$scope.shuffleling = false;
+
+		}
+
+		$scope.displayPalabras = function(){
+
+			res.unshift(data[idx])
+			$scope.res = res;
+			
+		}
+
+		$scope.newGame = function(){
+
+			$scope.shuffleling = true;
+			Prueba.get().$promise
+			.then(function(a){
+				data = a.data;
+				$scope.shuffleling = false;
+				$scope.totalWords = data.length;
+			});
+			idx = -1;
+			$scope.res = []
+			res = []
+
+		}
+		
+	}])
+
+
+</script>
+
+</html>

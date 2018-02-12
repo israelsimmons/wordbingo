@@ -1,0 +1,23 @@
+{
+  "name": "bingo",
+  "authors": [
+    "Israel Simmons <israel.simmons@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "v3.0.0",
+    "angular-route": "^1.6.9",
+    "angular-resource": "^1.6.9",
+    "angular": "angularjs#1.6.9"
+  }
+}
